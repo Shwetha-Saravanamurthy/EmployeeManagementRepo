@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -20,7 +18,7 @@ import java.sql.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetails implements UserDetailsService {
+public class UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int empId;
@@ -57,10 +55,7 @@ public class UserDetails implements UserDetailsService {
     private String workDepartment;
 
 
-    @Override
-    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
+
 }
 
 

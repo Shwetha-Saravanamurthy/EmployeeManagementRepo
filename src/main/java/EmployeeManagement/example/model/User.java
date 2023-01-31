@@ -17,4 +17,7 @@ public class User {
     private int employeeId;
     @NotNull(message = "password is mandatory")
     private String password;
+    @NotNull(message = "role is mandatory")
+    private String role;
+
 }

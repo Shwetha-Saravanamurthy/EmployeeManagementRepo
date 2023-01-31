@@ -1,15 +1,23 @@
 package EmployeeManagement.example.security;
+//import EmployeeManagement.example.filter.JWTAuthenticationFilter;
+//import EmployeeManagement.example.filter.JWTAuthorizationFilter;
 import EmployeeManagement.example.model.UserDetails;
-import EmployeeManagement.example.service.EmployeeService;
+//import EmployeeManagement.example.response.CustomLoginSucessHandler;
+//import EmployeeManagement.example.service.AuthenticationUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+//import org.springframework.security.authentication.AuthenticationManager;
+//import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,17 +25,19 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
-public class WebSecurityConfig {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public UserDetails userDetails() {
 
         return userDetails();
     }
 
-    @Autowired
-    private CustomLoginSucessHandler sucessHandler;
+    //private final AuthenticationUserDetailService;
+//    @Autowired
+//    private CustomLoginSucessHandler sucessHandler;
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder()
+    {
         return new BCryptPasswordEncoder();
     }
 
@@ -39,10 +49,8 @@ public class WebSecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(userDetails());
+        authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
 
@@ -55,8 +63,21 @@ public class WebSecurityConfig {
                 .antMatchers("/addEmployee").hasAnyAuthority("Login")
                 .anyRequest().authenticated()
                 .and()
-                //form login
+
                 .cors()
+                .and().
+                csrf()
+                .disable()
+                .authorizeRequests()
+              //  .antMatchers(HttpMethod.POST, JWTAuthenticationFilter.AuthenticationConfigConstants.SIGN_UP_URL).permitAll()
+                .anyRequest().authenticated()
+                .and()
+               // .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+               // .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                // this disables session creation on Spring Security
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                //form login
+                //.cors()
                 .and().
                 csrf()
                 .disable()
@@ -81,6 +102,12 @@ public class WebSecurityConfig {
         return httpSecurity.build();
 
     }
+
+
+//    @Override
+//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(authenticationUserDetailService).passwordEncoder(passwordEncoder());
+//    }
 }
 
 
